@@ -9,16 +9,16 @@ Read these in order:
 5. [Operations, safety, and cost](operations.md)
 
 The current implementation is a working MVP foundation. It can generate
-original narration and metadata, create a simple branded text-card Short,
+original narration, metadata, and a background image, create a branded Short,
 upload it, and remove temporary assets after a verified YouTube upload.
 
 ## Current MVP boundaries
 
 - Video duration is checked against the configured 10–30 second limits.
 - Video output is portrait 1080×1920, H.264/AAC MP4 with burned-in captions.
-- Visuals are rendered by FFmpeg as a branded infographic with geometric
-  graphics, a title panel, and fixed safe-position captions. `visual_prompt` is
-  produced by Gemini, but no external stock or image provider is connected yet.
+- Visuals use a Gemini-generated 9:16 background with FFmpeg-rendered branded
+  graphics, a title panel, and fixed safe-position captions. Image generation
+  requires Vertex AI access and incurs model usage charges.
 - Gemini Nano is not used by the cloud service. Nano is an on-device model; the
   Cloud Run pipeline calls Gemini on Vertex AI. A device-side Nano client can be
   added separately for local ideation or preprocessing.

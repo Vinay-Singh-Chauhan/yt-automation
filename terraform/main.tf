@@ -20,6 +20,7 @@ locals {
     YOUTUBE_OAUTH_SECRET   = var.youtube_secret_name
     YOUTUBE_PRIVACY_STATUS = var.youtube_privacy_status
     GEMINI_MODEL           = var.gemini_model
+    GEMINI_IMAGE_MODEL     = var.gemini_image_model
     TTS_VOICE              = var.tts_voice
     TTS_LANGUAGE           = var.tts_language
     MIN_VIDEO_SECONDS      = tostring(var.min_video_seconds)

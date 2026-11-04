@@ -7,7 +7,7 @@ Cloud Scheduler (paused by default)
             -> Cloud Run intake: /pubsub
                 -> Workflows execution
                     -> Cloud Run Job: yt-pipeline-worker
-                        -> Vertex AI Gemini (global endpoint by default)
+                        -> Vertex AI Gemini text and image generation (global endpoint by default)
                         -> Cloud Text-to-Speech
                         -> FFmpeg rendering
                         -> Cloud Storage temporary run prefix

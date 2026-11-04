@@ -7,7 +7,7 @@
 | `app/api.py` | FastAPI health check and Pub/Sub push endpoint. It validates message JSON and starts a Workflows execution. |
 | `app/models.py` | Validates topics, duration, language, privacy, and Gemini output. |
 | `app/services/generator.py` | Calls Gemini through the Vertex AI-enabled `google-genai` client and validates structured JSON output. |
-| `app/services/media.py` | Synthesizes narration using Cloud Text-to-Speech. The MVP returns no downloaded assets; the renderer supplies the visuals. |
+| `app/services/media.py` | Synthesizes narration using Cloud Text-to-Speech and generates a vertical background with a separate Gemini image model on Vertex AI. |
 | `app/services/renderer.py` | Checks audio duration and uses FFmpeg/FFprobe to create a vertical infographic-style H.264/AAC video, fixed lower-third captions, and JPEG thumbnail. |
 | `app/services/uploader.py` | Reads OAuth JSON from Secret Manager, uploads the MP4 and thumbnail, then checks the YouTube upload status. |
 | `app/services/cleanup.py` | Copies temporary artifacts to a per-run Cloud Storage prefix and deletes local files or the successful run prefix. |
@@ -23,12 +23,12 @@ FFprobe measures the audio before rendering; audio outside the configured
 duration range fails the run rather than silently producing a Short that
 misses the requirement. Captions are burned into a 1080×1920 portrait video.
 
-The renderer creates a branded infographic-style composition with a title
-panel, chart bars that reveal progressively during the opening, and timed
-narration captions positioned in the lower safe area. `visual_prompt` is preserved in the generated content for
-future image/video provider integration, but this MVP does not download stock
-media or call a generative image endpoint. This keeps first deployment simpler
-and avoids unreviewed third-party asset licensing.
+Gemini generates a 9:16 background image from `visual_prompt`. FFmpeg scales and
+crops the image to 1080×1920, darkens it for legibility, then overlays the
+branded title panel, progressively revealed chart bars, and timed narration
+captions. Image generation uses its own model setting, independently of the
+text-generation model. Generation errors fail the run rather than silently
+falling back to the plain graphic background.
 
 ## Idempotency and retries
 
@@ -72,6 +72,7 @@ deployed values:
 | `ASSETS_BUCKET` | empty | Private temporary asset bucket. |
 | `YOUTUBE_OAUTH_SECRET` | `yt-oauth-credentials` | Secret containing YouTube OAuth JSON. |
 | `GEMINI_MODEL` | `gemini-3.8-flash` | Vertex AI Gemini model ID used for content generation. |
+| `GEMINI_IMAGE_MODEL` | `gemini-3.1-flash-image` | Vertex AI Gemini image-generation model used for the vertical background. |
 | `TTS_VOICE` | `en-US-Neural2-F` | Text-to-Speech voice. |
 | `TTS_LANGUAGE` | `en-US` | Text-to-Speech language code. |
 | `YOUTUBE_PRIVACY_STATUS` | `private` | Default visibility. |

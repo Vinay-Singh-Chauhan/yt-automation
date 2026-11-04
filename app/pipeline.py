@@ -50,7 +50,12 @@ def run_pipeline(payload: dict, message_id: str | None = None) -> str | None:
         video_path = work_dir / "short.mp4"
         thumbnail_path = work_dir / "thumbnail.jpg"
         media.synthesize_narration(content.narration, audio_path)
-        media.download_assets(content.visual_prompt, work_dir)
+
+        # Use the three scene-specific visual prompts when available; fall back to the
+        # single visual_prompt so older GeneratedContent responses still work.
+        visual_prompts = content.visual_prompts or [content.visual_prompt]
+        background_paths = media.generate_backgrounds(visual_prompts, work_dir)
+
         duration = render_short(
             audio_path,
             content.narration,
@@ -59,6 +64,9 @@ def run_pipeline(payload: dict, message_id: str | None = None) -> str | None:
             thumbnail_path,
             settings.min_video_seconds,
             min(settings.max_video_seconds, request.duration_seconds + 5),
+            background_paths=background_paths,
+            badge_label=content.badge_label,
+            channel_handle=settings.channel_handle,
         )
         state.update(
             run_id,

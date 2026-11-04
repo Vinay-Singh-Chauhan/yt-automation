@@ -240,6 +240,10 @@ required to render; the Dockerfile installs them.
 - Content generation uses `gemini-3.8-flash` by default. Override
   `gemini_model` when applying Terraform if you choose another model that is
   available to your project and region.
+- Background-image generation uses `gemini-3.1-flash-image` by default.
+  Override `gemini_image_model` if another supported Vertex AI image model is
+  enabled for your project. Image generation incurs additional model usage
+  charges.
 - The Vertex AI model location is configured separately from the Cloud Run
   region and defaults to `global`. This matches the global endpoint used by
   the successful Vertex AI test request. To select a regional Vertex AI

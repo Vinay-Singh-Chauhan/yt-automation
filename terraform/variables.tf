@@ -71,6 +71,12 @@ variable "gemini_model" {
   default     = "gemini-3.8-flash"
 }
 
+variable "gemini_image_model" {
+  type        = string
+  description = "Vertex AI Gemini model ID used to generate vertical video backgrounds."
+  default     = "gemini-3.1-flash-image"
+}
+
 variable "vertex_ai_location" {
   type        = string
   description = "Vertex AI location for Gemini requests; use global when the model is not available regionally."

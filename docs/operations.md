@@ -7,9 +7,8 @@
   suitable disclosures before changing the default to public.
 - Gemini output can be incorrect or inappropriate. The pipeline does not claim
   to fact-check generated content.
-- Do not use the generated visual prompt as proof that any asset was actually
-  created or licensed. This MVP's visuals are FFmpeg-rendered infographic
-  graphics rather than topic-specific generated or stock imagery.
+- Review generated background images for factual, policy, and rights concerns.
+  Gemini-generated images do not establish ownership or licensing rights.
 - Avoid personal data and sensitive topics in prompts unless there is a clear
   need and an approved handling policy.
 - Configure a Google Cloud budget and billing alerts before enabling a daily
@@ -97,8 +96,8 @@ using the same idempotency key.
 No fixed monthly price is guaranteed. The actual bill depends on model input
 and output tokens, voice duration, FFmpeg CPU/memory and runtime, Cloud Run
 request/job usage, Storage volume, external media licenses, YouTube API quotas,
-and network egress. The current motion-card approach has no stock-media
-subscription cost.
+and network egress. Each run also uses the configured Gemini image model to
+generate a background; model usage and output image size affect cost.
 
 For 30 short videos per month, the previous `$7–$20` estimate should be treated
 as an optimistic low-usage scenario, not a quote. Use the Google Cloud Pricing
@@ -109,8 +108,8 @@ do not guarantee zero storage or network charges.
 
 ## Planned extension points
 
-- Add a licensed stock or generated-image provider in `services/media.py`, with
-  attribution/license metadata, input validation, and download limits.
+- Add attribution/license metadata and image review controls if the pipeline
+  later uses licensed stock assets.
 - Add a manual approval stage between render and upload, if fully automatic
   publishing is not yet acceptable.
 - Add YouTube Analytics and a reporting store in a later phase; analytics is
