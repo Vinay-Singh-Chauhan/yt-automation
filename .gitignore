@@ -1,0 +1,17 @@
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+secrets/
+
+# Terraform local data and variable files
+.venv/
+__pycache__/
+*.py[cod]
+.terraform/
+terraform.tfstate*
+*.tfplan
+*.tfvars
+*.tfvars.json
+dist/
+build/

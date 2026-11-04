@@ -1,0 +1,17 @@
+main:
+  params: [input]
+  steps:
+    - start_job:
+        call: http.post
+        args:
+          url: "https://run.googleapis.com/v2/projects/${project_id}/locations/${region}/jobs/${job_name}:run"
+          auth:
+            type: OAuth2
+          body:
+            overrides:
+              containerOverrides:
+                - name: pipeline
+                  args: ["-m", "app.worker", "$${json.encode_to_string(input)}"]
+        result: job_execution
+    - return_execution:
+        return: $${job_execution.body.name}

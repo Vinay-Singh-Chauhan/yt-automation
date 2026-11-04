@@ -1,0 +1,20 @@
+.git
+.venv
+__pycache__
+.pytest_cache
+tests
+docs
+terraform
+secrets
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+
+# Local Terraform state and variable files
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+*.tfplan
