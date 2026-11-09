@@ -12,6 +12,7 @@ from app.api import _decode_pubsub
 from app.config import Settings
 from app.models import GeneratedContent, RunRequest
 from app.pipeline import run_id_for
+from app.services.generator import ContentGenerator
 from app.services.media import MediaService
 from app.services.renderer import _build_video_filter, _make_caption_segments, render_short
 from app.services.uploader import YouTubePublisher
@@ -125,6 +126,37 @@ class CaptionTests(unittest.TestCase):
         self.assertEqual(video_command[2:4], ["-loop", "1"])
         self.assertIn(str(background_path), video_command)
         self.assertIn("scale=1080:1920:", video_command[video_command.index("-vf") + 1])
+
+
+class ContentGeneratorTests(unittest.TestCase):
+    def test_generator_injects_avoid_clause_when_recent_titles_provided(self):
+        settings = Settings.from_env()
+        mock_client = Mock()
+        mock_response = Mock()
+        mock_response.text = json.dumps({
+            "title": "Quantum Entanglement",
+            "description": "Physics fact",
+            "tags": ["physics"],
+            "narration": "Entanglement is spooky action at a distance.",
+            "visual_prompt": "Abstract particles",
+            "visual_prompts": ["p1", "p2", "p3"],
+            "badge_label": "SCIENCE",
+            "hashtags": ["#science"],
+        })
+        mock_client.models.generate_content.return_value = mock_response
+
+        with patch("app.services.generator.genai.Client", return_value=mock_client):
+            generator = ContentGenerator(settings)
+            res = generator.generate(
+                RunRequest(topic="General science"),
+                recent_titles=["Black Holes", "Newton's Laws"]
+            )
+        self.assertEqual(res.title, "Quantum Entanglement")
+        call_args = mock_client.models.generate_content.call_args
+        prompt = call_args.kwargs["contents"]
+        self.assertIn("Black Holes", prompt)
+        self.assertIn("Newton's Laws", prompt)
+        self.assertIn("DO NOT REPEAT", prompt)
 
 
 class SettingsTests(unittest.TestCase):

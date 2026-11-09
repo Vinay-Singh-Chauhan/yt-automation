@@ -54,3 +54,22 @@ class RunState:
     def get(self, run_id: str) -> dict:
         snapshot = self._collection.document(run_id).get()
         return snapshot.to_dict() or {}
+
+    def get_recent_titles(self, limit: int = 15) -> list[str]:
+        """Fetch recently generated/uploaded video titles to avoid duplicate topics."""
+        try:
+            query = (
+                self._collection.order_by("updated_at", direction=firestore.Query.DESCENDING)
+                .limit(limit)
+                .stream()
+            )
+            titles = []
+            for doc in query:
+                data = doc.to_dict() or {}
+                title = data.get("title")
+                if title and title not in titles:
+                    titles.append(title)
+            return titles
+        except Exception:
+            # Non-blocking fallback if indexes or permissions are not yet ready
+            return []
