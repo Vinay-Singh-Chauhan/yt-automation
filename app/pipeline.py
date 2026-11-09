@@ -44,7 +44,8 @@ def run_pipeline(payload: dict, message_id: str | None = None) -> str | None:
     uploaded_to_youtube = False
     try:
         state.update(run_id, status="generating")
-        content = ContentGenerator(settings).generate(request)
+        recent_titles = state.get_recent_titles(limit=15)
+        content = ContentGenerator(settings).generate(request, recent_titles=recent_titles)
         media = MediaService(settings)
         audio_path = work_dir / "narration.mp3"
         video_path = work_dir / "short.mp4"
